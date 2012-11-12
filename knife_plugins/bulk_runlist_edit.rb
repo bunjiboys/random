@@ -28,7 +28,6 @@ module BulkRunlistEdit
              :description => 'Dont do anything, just show the nodes that would be changed'
 
       def run
-         ui.highline
          if name_args.size != 2
             ui.fatal "Invalid number of arguments, must specify two arguments"
             show_usage
@@ -66,7 +65,6 @@ module BulkRunlistEdit
              :description => 'Dont do anything, just show the nodes that would be changed'
 
       def run
-         ui.highline
          unless name_args.size >= 2
             ui.fatal('Not enough arguments specified')
             show_usage
