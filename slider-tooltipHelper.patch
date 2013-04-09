@@ -1,0 +1,51 @@
+--- a/bootstrap-slider.js	2013-03-07 14:11:32.000000000 -0800
++++ b/bootstrap-slider.js	2013-04-09 15:36:46.000000000 -0700
+@@ -38,6 +38,9 @@
+ 
+ 		var tooltip = this.element.data('slider-tooltip')||options.tooltip;
+ 
++		if (jQuery.isFunction(options.tooltipHelper))
++			this.tooltipHelper = options.tooltipHelper;
++
+ 		this.tooltip = this.picker.find('.tooltip');
+ 		this.tooltipInner = this.tooltip.find('div.tooltip-inner');
+ 
+@@ -150,6 +153,15 @@
+ 			this.over = false;
+ 		},
+ 
++		tooltipHelper: function(){
++			if (this.range)
++				return (this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step) + 
++					' : ' + 
++					(this.min + Math.round((this.diff * this.percentage[1]/100)/this.step)*this.step);
++			else
++				return (this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step);
++		},
++
+ 		layout: function(){
+ 			this.handle1Stype[this.stylePos] = this.percentage[0]+'%';
+ 			this.handle2Stype[this.stylePos] = this.percentage[1]+'%';
+@@ -160,19 +172,11 @@
+ 				this.selectionElStyle.left = Math.min(this.percentage[0], this.percentage[1]) +'%';
+ 				this.selectionElStyle.width = Math.abs(this.percentage[0] - this.percentage[1]) +'%';
+ 			}
+-			if (this.range) {
+-				this.tooltipInner.text(
+-					(this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step) + 
+-					' : ' + 
+-					(this.min + Math.round((this.diff * this.percentage[1]/100)/this.step)*this.step)
+-				);
++			this.tooltipInner.text(this.tooltipHelper());
++			if (this.range)
+ 				this.tooltip[0].style[this.stylePos] = this.size * (this.percentage[0] + (this.percentage[1] - this.percentage[0])/2)/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
+-			} else {
+-				this.tooltipInner.text(
+-					(this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step)
+-				);
++			else
+ 				this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0]/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
+-			}
+ 		},
+ 
+ 		mousedown: function(ev) {
