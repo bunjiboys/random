@@ -1,0 +1,57 @@
+Index: src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java
+===================================================================
+--- src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java	(revision 41390)
++++ src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java	(working copy)
+@@ -20,12 +20,14 @@
+ package com.zabbix.gateway;
+ 
+ import java.util.HashMap;
++import java.util.Set;
+ import java.util.Vector;
+ 
+ import javax.management.MBeanAttributeInfo;
+ import javax.management.MBeanInfo;
+ import javax.management.MBeanServerConnection;
+ import javax.management.ObjectName;
++import javax.management.ObjectInstance;
+ import javax.management.openmbean.CompositeData;
+ import javax.management.openmbean.TabularDataSupport;
+ import javax.management.remote.JMXConnector;
+@@ -192,6 +194,37 @@
+ 			mapping.put(ItemChecker.JSON_TAG_DATA, counters);
+ 			return mapping.toString();
+ 		}
++		else if (item.getKeyId().equals("jmx.discovery.filter"))
++		{
++			if (1 != item.getArgumentCount())
++				throw new ZabbixException("required key format: jmx.discovery.filter[<obj name>]");
++
++			ObjectName filter = new ObjectName(item.getArgument(1));
++			JSONArray beanList = new JSONArray();
++			JSONObject mapping = new JSONObject();
++
++			Set beans = mbsc.queryMBeans(filter, null);
++			for (Object obj : beans) {
++				JSONObject bean = new JSONObject();
++				ObjectName beanName;
++
++				if (obj instanceof ObjectName)
++					beanName = (ObjectName) obj;
++				else if (obj instanceof ObjectInstance)
++					beanName = ((ObjectInstance) obj).getObjectName();
++				else
++					throw new RuntimeException("Unexpected object type: " + obj);
++
++				MBeanInfo mbi = mbsc.getMBeanInfo(beanName);
++				bean.put("{#JMXDESC}", mbi.getDescription());
++				bean.put("{#JMXOBJ}", beanName.getCanonicalName());
++				bean.put("{#JMXPROPERTIES}", beanName.getKeyPropertyList());
++				beanList.put(bean);
++			}
++
++			mapping.put(ItemChecker.JSON_TAG_DATA, beanList);
++			return mapping.toString();
++		}
+ 		else
+ 			throw new ZabbixException("key ID '%s' is not supported", item.getKeyId());
+ 	}
