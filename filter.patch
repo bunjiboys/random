@@ -2,11 +2,10 @@ Index: src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java
 ===================================================================
 --- src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java	(revision 41390)
 +++ src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java	(working copy)
-@@ -20,12 +20,17 @@
+@@ -20,12 +20,16 @@
  package com.zabbix.gateway;
  
  import java.util.HashMap;
-+import java.util.LinkedHashMap;
 +import java.util.Hashtable;
 +import java.util.Map.Entry;
 +import java.util.Set;
@@ -20,7 +19,7 @@ Index: src/zabbix_java/src/com/zabbix/gateway/JMXItemChecker.java
  import javax.management.openmbean.CompositeData;
  import javax.management.openmbean.TabularDataSupport;
  import javax.management.remote.JMXConnector;
-@@ -192,6 +197,44 @@
+@@ -192,6 +196,44 @@
  			mapping.put(ItemChecker.JSON_TAG_DATA, counters);
  			return mapping.toString();
  		}
