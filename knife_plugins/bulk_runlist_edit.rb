@@ -32,6 +32,11 @@ module BulkRunlistEdit
              :long => '--after ITEM',
              :description => 'Place the ENTRY after ITEM in the run list'
 
+      option :before,
+             :short => '-b ITEM',
+             :long => '--before ITEM',
+             :description => 'Place the ENTRY before ITEM in the run list'
+
       option :changes,
              :short => '-C',
              :long => '--show-changes',
@@ -54,13 +59,22 @@ module BulkRunlistEdit
          end
 
          nodesearch.search('node', query) do |node|
-            if config[:after]
+            if config[:after] then
                nlist = []
                node.run_list.each do |entry|
                   nlist << entry
-                  if entry == config[:after]
+                  if entry == config[:after] then
                      runlist_items.each { |e| nlist << e }
                   end
+               end
+               node.run_list.reset!(nlist)
+            elsif config[:before] then
+               nlist = []
+               node.run_list.each do |entry|
+                  if entry == config[:before] then
+                     runlist_items.each { |e| nlist << e }
+                  end
+                  nlist << entry
                end
                node.run_list.reset!(nlist)
             else
